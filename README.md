@@ -1,2 +1,0 @@
-# hgtv
-HGTV Email Automation
