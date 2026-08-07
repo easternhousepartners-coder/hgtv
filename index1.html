@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HGTV Email Launcher</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0A1628;
+    color: #F0EDE6;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px;
+  }
+  .card {
+    background: #F7F9FC;
+    color: #1C2333;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 640px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  }
+  .card-header {
+    background: #1B4F8A;
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 3px solid #5B9BD5;
+  }
+  .card-header svg { flex-shrink: 0; }
+  .card-header-text h1 { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+  .card-header-text p { font-size: 12px; color: rgba(255,255,255,0.65); }
+  .card-body { padding: 24px 28px; }
+  .field { margin-bottom: 18px; }
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #1B4F8A;
+    margin-bottom: 6px;
+  }
+  input[type="text"], textarea {
+    width: 100%;
+    border: 1.5px solid #C5D5E8;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 13.5px;
+    font-family: inherit;
+    color: #1C2333;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.15s;
+    resize: vertical;
+  }
+  input[type="text"]:focus, textarea:focus { border-color: #1B4F8A; }
+  textarea { min-height: 220px; line-height: 1.6; }
+  .tag-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag-btn {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1.5px solid #C5D5E8;
+    background: #fff;
+    font-size: 12px;
+    font-family: inherit;
+    color: #4A5568;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .tag-btn.selected { background: #1B4F8A; border-color: #1B4F8A; color: #fff; font-weight: 600; }
+  .send-btn {
+    width: 100%;
+    padding: 14px;
+    background: #1B4F8A;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    margin-top: 8px;
+    letter-spacing: 0.02em;
+  }
+  .send-btn:hover { background: #154070; }
+  .send-btn:active { transform: scale(0.99); }
+  .send-btn:disabled { background: #8BA8C8; cursor: not-allowed; }
+  .status {
+    margin-top: 14px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    display: none;
+    line-height: 1.5;
+  }
+  .status.success { background: #E6F4EA; color: #1E6E3A; border: 1px solid #A8D5B5; display: block; }
+  .status.error { background: #FDE8E8; color: #8B1A1A; border: 1px solid #F5B7B7; display: block; }
+  .status.loading { background: #EBF2FA; color: #1B4F8A; border: 1px solid #B0CEEA; display: block; }
+  .divider { height: 1px; background: #E0E8F0; margin: 20px 0; }
+  .footer-note { font-size: 11px; color: #8BA8C8; text-align: center; margin-top: 16px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card-header">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+      <rect width="32" height="32" rx="8" fill="rgba(255,255,255,0.12)"/>
+      <path d="M8 10h16M8 16h10M8 22h13" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="25" cy="22" r="4" fill="#5B9BD5"/>
+      <path d="M23.5 22l1 1 2-2" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div class="card-header-text">
+      <h1>HGTV Email Launcher</h1>
+      <p>Eastern House Partners &nbsp;·&nbsp; Seller Nurture Sequence</p>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="field">
+      <label>Subject Line</label>
+      <input type="text" id="subject" placeholder="e.g. They didn't want to sell. Then this happened.">
+    </div>
+    <div class="field">
+      <label>Email Body</label>
+      <textarea id="body" placeholder="Paste the approved email body here..."></textarea>
+    </div>
+    <div class="field">
+      <label>Send To</label>
+      <div class="tag-row" id="tagRow">
+        <button class="tag-btn selected" data-tag="446948">Cash Offer — Requested</button>
+        <button class="tag-btn" data-tag="446949">Cash Offer — Completed FDIF</button>
+        <button class="tag-btn" data-tag="448121">Cash Offer — Secured</button>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <button class="send-btn" id="sendBtn" onclick="sendEmail()">Send to ClickFunnels</button>
+    <div class="status" id="status"></div>
+    <p class="footer-note">Sends via Zapier → ClickFunnels 2.0 broadcast API &nbsp;·&nbsp; Eastern House Partners, LLC</p>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.tag-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    });
+  });
+
+  async function sendEmail() {
+    const subject = document.getElementById('subject').value.trim();
+    const body = document.getElementById('body').value.trim();
+    const tagBtn = document.querySelector('.tag-btn.selected');
+    const tagId = tagBtn ? tagBtn.dataset.tag : '446948';
+    const status = document.getElementById('status');
+    const btn = document.getElementById('sendBtn');
+
+    if (!subject || !body) {
+      status.className = 'status error';
+      status.textContent = 'Subject and body are both required before sending.';
+      return;
+    }
+
+    btn.disabled = true;
+    status.className = 'status loading';
+    status.textContent = 'Sending to ClickFunnels via Zapier...';
+
+    const ZAPIER_URL = 'https://hooks.zapier.com/hooks/catch/22562904/46fqdfn/';
+    const payload = JSON.stringify({ subject, body, tag_ids: [parseInt(tagId)] });
+
+    // Use no-cors mode — Zapier accepts the request, we just can't read the response
+    try {
+      await fetch(ZAPIER_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: payload
+      });
+
+      // no-cors always returns opaque response — if we got here it fired
+      status.className = 'status success';
+      status.textContent = '✓ Request sent. Check ClickFunnels broadcasts and your Zapier Zap history to confirm it landed.';
+      document.getElementById('subject').value = '';
+      document.getElementById('body').value = '';
+    } catch (err) {
+      status.className = 'status error';
+      status.textContent = 'Failed to reach Zapier. Check your internet connection and try again.';
+    }
+
+    btn.disabled = false;
+  }
+</script>
+</body>
+</html>
